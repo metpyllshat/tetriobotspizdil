@@ -263,7 +263,7 @@ def _get_board_terrain(board):
 
 
 def _has_i_slot(board, board_terrain):
-    board_terrain_sorted = sorted(board_terrain)
+    board_terrain_sorted = np.sort(board_terrain)
     if board_terrain_sorted[0] + 4 > board_terrain_sorted[1]:
         return False, 0
     for x, h in enumerate(board_terrain):
@@ -276,7 +276,7 @@ def evaluate_board(board):
     score = 0
 
     board_terrain = _get_board_terrain(board)
-    board_terrain_sorted = sorted(board_terrain)
+    board_terrain_sorted = np.sort(board_terrain)
 
     i_slot_count = 0
     if board_terrain[0] + 2 < board_terrain[1]:
