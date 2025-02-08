@@ -5,7 +5,6 @@ from spin_i import get_i_slots
 from spin_jl import get_j_slots, get_l_slots
 from spin_t import get_t_slots, get_mini_t_slots
 from spin_zs import get_s_slots, get_z_slots
-from joblib import Parallel, delayed
 
 T_SPIN_MAX_HEIGHT = 10
 TRIPLE_T_SPIN_MAX_HEIGHT = 8

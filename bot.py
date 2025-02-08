@@ -1,15 +1,14 @@
 from multiprocessing import Pool
-import cv2
+
 import keyboard
 import time
 import numpy as np
 import math
 from PIL import ImageGrab
 from PIL.Image import Image
-from joblib import Parallel, delayed
+
 from constants import colors, colors_name, tetris_pieces, NUM_ROW, NUM_COL
 from tetris_ai import find_best_move
-from scipy.spatial import KDTree
 
 # keybinds
 rotate_clockwise_key = 'x'
@@ -65,6 +64,7 @@ class TetrioBot:
         self.refresh_screen_image()
 
     def refresh_screen_image(self):
+        # ImageGrab.grab is too heavy. We only make 1 whole screenshot and crop from this only screenshot
         self.screen_image = ImageGrab.grab(
             bbox=(
                 self.screen_offset[0],
@@ -219,14 +219,12 @@ class TetrioBot:
     def run(self):
         combo = 0
         b2b = 0
-
         last_next_pieces = self.get_next_pieces()
         expected_board = np.zeros((NUM_ROW, NUM_COL), dtype=np.int32)
         # for _ in range(100):
         while True:
             if keyboard.is_pressed('0'):
                 exit(0)
-            tboard=time.time()
             self.refresh_screen_image()
             next_pieces = self.get_next_pieces()
             while next_pieces == last_next_pieces:
@@ -234,7 +232,9 @@ class TetrioBot:
                 self.refresh_screen_image()
                 next_pieces = self.get_next_pieces()
 
-            current_piece = last_next_pieces[0]            
+            current_piece = last_next_pieces[0]
+            last_next_pieces = next_pieces
+
             current_board = self.get_tetris_board()
             if not np.all(np.equal(current_board, expected_board)):
                 print("Unexpected board")
@@ -245,7 +245,6 @@ class TetrioBot:
                 keyboard.release(hold_key)
                 time.sleep(key_delay)
                 continue
-            tboard2=time.time()
             t1 = time.time()
             score, (position, rotations, need_hold, combo, b2b, expected_board) = find_best_move(
                 current_board, current_piece, next_pieces, held_piece, combo, b2b,
@@ -256,7 +255,7 @@ class TetrioBot:
             )
             t2 = time.time()
 
-            print(f"score: {round(score):6}   b2b: {b2b:2}    time to find best move: {t2-t1}, TIME TO GET BOARD:{tboard2-tboard}")
+            print(f"score: {round(score):6}   b2b: {b2b:2}    time: {t2-t1}")
             if t2 - t1 < wait_time:
                 time.sleep(wait_time - t2 + t1)
 
