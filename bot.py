@@ -9,7 +9,7 @@ from PIL.Image import Image
 
 from constants import colors, colors_name, tetris_pieces, NUM_ROW, NUM_COL
 from tetris_ai import find_best_move
-
+import random
 # keybinds
 rotate_clockwise_key = 'x'
 rotate_180_key = 'a'
@@ -20,7 +20,7 @@ move_right_key = 'right'
 drop_key = 'space'
 wait_time = 0.03
 soft_drop_delay = 0.1
-key_delay = 0.01
+key_delay = 0.04
 # Game Settings - DAS 40ms, ARR 0ms, SDF max, lowest graphic
 
 
@@ -225,6 +225,8 @@ class TetrioBot:
         while True:
             if keyboard.is_pressed('0'):
                 exit(0)
+            key_delay=random.uniform(0.01,0.05)
+            wait_time=random.uniform(0.02,0.04)
             self.refresh_screen_image()
             next_pieces = self.get_next_pieces()
             while next_pieces == last_next_pieces:
